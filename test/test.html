@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>test</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+<body>
+    <div id="navbar"></div>
+</body>
+<script src="js/jquery-3.7.1.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script>
+    // 載入nav.html
+    $("#navbar").load("nav.html", function () {
+                // 取得當前頁面名稱
+                var currentPage = window.location.pathname.split("/").pop(); 
+
+                $(".nav-link").each(function () {
+                    var link = $(this).attr("href");
+                    if (link === currentPage) {
+                        // 加上 active 樣式
+                        $(this).addClass("active"); 
+                    } else {
+                        // 移除其他 active
+                        $(this).removeClass("active"); 
+                    }
+                });
+            });
+</script>
+</html>
