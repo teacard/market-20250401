@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>控制台 - 報表展示</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/my.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">控制台</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled">Disabled</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card h-100 shadow">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fa-solid fa-money-bill-1-wave fa-4x text-success d-none d-md-block"></i>
+                        <div class="text-center w-100">
+                            <div class="h5 fw-900">今日營業額</div>
+                            <div class="h3 fw-900">10,000</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card h-100 shadow">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fa-solid fa-users fa-4x text-danger d-none d-md-block"></i>
+                        <div class="text-center w-100">
+                            <div class="h5 fw-900">會員人數</div>
+                            <div class="h3 fw-900" id="count_member">200</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card h-100 shadow">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fa-solid fa-sack-dollar fa-4x text-danger d-none d-md-block"></i>
+                        <div class="text-center w-100">
+                            <div class="h5 fw-900">商品數量</div>
+                            <div class="h3 fw-900">999</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card h-100 shadow">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fa-solid fa-money-bill-1-wave fa-6x text-005 d-none d-md-block"></i>
+                        <div class="text-center w-100">
+                            <div class="h3 fw-900">年度營業額</div>
+                            <div class="h1 fw-900">99,000</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header h4 text-bg-success fw-900 text-center">
+                        會員來源分布統計
+                    </div>
+                    <div class="card-body">
+                        <canvas id="myChart01"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header h4 text-bg-warning fw-900 text-center">
+                        會員等級分布統計
+                    </div>
+                    <div class="card-body">
+                        <canvas id="myChart02"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var mychart01;
+        var mychart02;
+        $(function () {
+            //產生基本圖表 mychart01
+            const ctx01 = document.getElementById('myChart01');
+
+            mychart01 = new Chart(ctx01, {
+                type: 'bar',
+                data: {
+                    labels: ['台中市', '台北市', '台南市', '高雄市', '新北市', '桃園市'],
+                    datasets: [{
+                        label: '人數',
+                        data: [12, 19, 8, 5, 12, 10],
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 20, 186)',
+                            'rgb(100, 205, 10)',
+                            'rgb(0, 205, 86)',
+                            'rgb(255, 63, 200)'
+                        ],
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+
+            //產生基本圖表 mychart02
+            const ctx02 = document.getElementById('myChart02');
+
+            mychart02 = new Chart(ctx02, {
+                type: 'line',
+                data: {
+                    labels: ['台中市', '台北市', '台南市', '高雄市', '新北市', '桃園市'],
+                    datasets: [{
+                        label: '人數',
+                        data: [12, 19, 8, 5, 12, 10],
+                        borderWidth: 1,
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 20, 186)',
+                            'rgb(100, 205, 10)',
+                            'rgb(0, 205, 86)',
+                            'rgb(255, 63, 200)'
+                        ],
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            //取得會員統計資料
+            $.ajax({
+                type: "GET",
+                url: "20250211-control-panel-api.php?action=count",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data)
+                    if (data.state) {
+                        $("#count_member").text(data.data.count_member);
+                    } else {
+                        Swal.fire({
+                            title: data.message,
+                            icon: "error"
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        title: "API介接錯誤!",
+                        text: "20250211-control-panel-api.php?action=count",
+                        icon: "error"
+                    });
+                }
+            });
+
+            //取得會員居住分布資料
+            $.ajax({
+                type: "GET",
+                url: "20250211-control-panel-api.php?action=region",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    if (data.state) {
+                        mychart01.data.labels = [];
+                        mychart01.data.datasets[0].data = [];
+                        data.data.forEach(function (item) {
+                            console.log(item);
+                            mychart01.data.labels.push(item.Region);
+                            mychart01.data.datasets[0].data.push(item.Region_count);
+                        });
+                        mychart01.update();
+                    } else {
+                        Swal.fire({
+                            title: data.message,
+                            icon: "error"
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        title: "API介接錯誤!",
+                        text: "20250211-control-panel-api.php?action=region",
+                        icon: "error"
+                    });
+                }
+            });
+
+            //取得會員等級分布資料
+            $.ajax({
+                type: "GET",
+                url: "20250211-control-panel-api.php?action=level",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    if (data.state) {
+                        mychart02.data.labels = [];
+                        mychart02.data.datasets[0].data = [];
+                        data.data.forEach(function (item) {
+                            console.log(item);
+                            if(item.Level == 100){
+                                mylevel = "管理管"
+                            }else if(item.Level == 10){
+                                mylevel = "一般會員"
+                            }else if(item.Level == 20){
+                                mylevel = "VIP會員"
+                            }else if(item.Level == 30){
+                                mylevel = "VVIP會員"
+                            }
+                            mychart02.data.labels.push(mylevel);
+                            mychart02.data.datasets[0].data.push(item.Level_count);
+                        });
+                        mychart02.update();
+                    } else {
+                        Swal.fire({
+                            title: data.message,
+                            icon: "error"
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        title: "API介接錯誤!",
+                        text: "20250211-control-panel-api.php?action=region",
+                        icon: "error"
+                    });
+                }
+            });
+
+        });
+
+
+        // mychart.data.labels.push("南投縣");
+        // mychart.data.datasets[0].data.push(10);
+        // mychart.update();
+
+    </script>
+</body>
+
+</html>

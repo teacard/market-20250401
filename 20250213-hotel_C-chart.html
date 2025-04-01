@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taipei Hotel Data - 圖表</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/my.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+</head>
+
+<body>
+    <div class="container-fluid mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <ul class="list-group" id="citylist">
+                    <li class="list-group-item">台中市</li>
+                </ul>
+            </div>
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-12" style="height: 40vh;">
+                        <canvas id="myChart01"></canvas>
+                    </div>
+                    <div class="col-12" style="height: 40vh;">
+                        <canvas id="myChart02"></canvas>
+                    </div>
+                    <div class="col-12" style="height: 40vh; width: 350px;">
+                        <canvas id="myChart03"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        var hotelData = [];
+        var selectCity;
+        var regionTitle = [];
+        var counter = [];
+        var regionData = [];
+        var mychart01;
+        var mychart02;
+        var mychart03;
+        $(function () {
+            //draw chart
+            const ctx01 = document.getElementById('myChart01');
+
+            mychart01 = new Chart(ctx01, {
+                type: 'bar', // line bat pie
+                data: {
+                    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                    datasets: [{
+                        label: '旅館數量',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderWidth: 5,
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)'
+                        ],
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // draw chart line
+            const ctx02 = document.getElementById('myChart02');
+
+            mychart02 = new Chart(ctx02, {
+                type: 'line', // line bat pie
+                data: {
+                    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                    datasets: [{
+                        label: '旅館數量',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderWidth: 5,
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)'
+                        ],
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // draw chart pie
+            const ctx03 = document.getElementById('myChart03');
+
+            mychart03 = new Chart(ctx03, {
+                type: 'pie', // line bat pie
+                data: {
+                    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                    datasets: [{
+                        label: '旅館數量',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderWidth: 5,
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)'
+                        ],
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            ///hotel_C 旅館資料
+            $.ajax({
+                type: "GET",
+                url: "js/hotel_C_f.json",
+                dataType: "json",
+                success: function (data) {
+                    // console.log(data);
+                    hotelData = data.XML_Head.Infos.Info;
+                    // console.log(hotelData);
+                },
+                async: false,
+                error: function () {
+                    Swal.fire({
+                        title: "API介接錯誤!",
+                        text: "js/hotel_C_f.json",
+                        icon: "error"
+                    });
+                }
+            });
+
+            //縣市資料
+            $.ajax({
+                type: "GET",
+                url: "js/CityCountyData.json",
+                dataType: "json",
+                success: function (data) {
+                    // console.log(data);
+                    //產生縣市list-item
+                    $("#citylist").empty();
+                    data.forEach(function (item) {
+                        var strHTML = `<li class="list-group-item" data-name="${item.CityName}">${item.CityName}</li>`;
+                        $("#citylist").append(strHTML);
+                    });
+                },
+                async: false,
+                error: function () {
+                    Swal.fire({
+                        title: "API介接錯誤!",
+                        text: "js/CityCountyData.json",
+                        icon: "error"
+                    });
+                }
+            });
+
+            //監聽縣市list-group-item
+            $("#citylist .list-group-item").click(function () {
+                console.log($(this).data("name"));
+                selectCity = $(this).data("name");
+
+                var filterData = [];
+                hotelData.forEach(function (item) {
+                    if (item.Region == selectCity) {
+                        filterData.push(item);
+                    }
+                });
+
+                console.log(filterData);
+
+                regionTitle = [];
+                counter = [];
+                regionData = [];
+
+                //資料重構
+                filterData.forEach(function (item) {
+                    getRegion = item.Town;
+                    if (counter[getRegion] == undefined) {
+                        counter[getRegion] = regionData.length;
+                        regionData.push(new Array());
+                        regionTitle[counter[getRegion]] = getRegion;
+                    }
+                    regionData[counter[getRegion]].push(item);
+
+                });
+                // console.log(regionTitle);
+                // console.log(counter);
+                // console.log(regionData);
+
+                // bar
+                mychart01.data.labels = [];
+                mychart01.data.datasets[0].data = [];
+
+                // line
+                mychart02.data.labels = [];
+                mychart02.data.datasets[0].data = [];
+
+                // pie
+                mychart03.data.labels = [];
+                mychart03.data.datasets[0].data = [];
+                regionTitle.forEach(function (item) {
+                    // bar
+                    mychart01.data.labels.push(item);
+                    mychart01.data.datasets[0].data.push(regionData[counter[item]].length);
+
+                    // line
+                    mychart02.data.labels.push(item);
+                    mychart02.data.datasets[0].data.push(regionData[counter[item]].length);
+
+                    // pie
+                    mychart03.data.labels.push(item);
+                    mychart03.data.datasets[0].data.push(regionData[counter[item]].length);
+                });
+                mychart01.update();
+                mychart02.update();
+                mychart03.update();
+            });
+
+
+        });
+
+        function showdata(data) {
+            console.log(data);
+            //資料重構
+            // data.data.forEach(function (item) {
+            //     getRegion = item.display_addr.substring(0, item.display_addr.indexOf("區", 0) + 1);
+            //     if (counter[getRegion] == undefined) {
+            //         counter[getRegion] = regionData.length;
+            //         regionData.push(new Array());
+            //         regionTitle[counter[getRegion]] = getRegion;
+            //     }
+            //     regionData[counter[getRegion]].push(item);
+
+            // });
+            // console.log(regionTitle);
+            // console.log(counter);
+            // console.log(regionData);
+
+            // mychart01.data.labels = [];
+            // mychart01.data.datasets[0].data = [];
+            // regionTitle.forEach(function (item) {
+            //     mychart01.data.labels.push(item);
+            //     mychart01.data.datasets[0].data.push(regionData[counter[item]].length);
+            // });
+            // mychart01.update();
+        }
+
+
+    </script>
+</body>
+
+</html>
