@@ -11,4 +11,4 @@
 
 ##聯絡作者
 
-<img src="img/01.jpg">
+<img src="/img/01.jpg">
